@@ -30,7 +30,6 @@ Before implementing object detection using the **Raspberry Pi 4** and **NoIR Cam
 * Managing Wi-Fi connections and network configuration via terminal
 * Working with the **libcamera** stack and **rpicam-apps**
 * Capturing images using **rpicam-still** and verifying camera functionality
-* Transferring files between local PC and Raspberry Pi using **SCP**
 * Understanding the build and usage of **rpicam-detect (TensorFlow Lite)**
 
 These fundamentals form the base for implementing and experimenting with real-time object detection on Raspberry Pi.
