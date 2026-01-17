@@ -1,4 +1,26 @@
 # Object-Detection-using-Raspberry-Pi-4-and-Raspberry-Pi-NoIR-camera-V2
+--- 
+## Documentation References
+
+The following official documentation and guides were referred to while learning and working with Raspberry Pi fundamentals:
+
+* **Getting Started**
+
+  * Raspberry Pi OS installation and initial setup
+    [https://www.raspberrypi.com/documentation/computers/getting-started.html](https://www.raspberrypi.com/documentation/computers/getting-started.html)
+
+* **Remote Access**
+
+  * Accessing Raspberry Pi headlessly using SSH
+    [https://www.raspberrypi.com/documentation/computers/remote-access.html](https://www.raspberrypi.com/documentation/computers/remote-access.html)
+
+* **Network Configuration**
+
+  * Managing Wi-Fi connections and network settings
+    [https://www.raspberrypi.com/documentation/computers/configuration.html](https://www.raspberrypi.com/documentation/computers/configuration.html)
+
+These resources were used to understand system setup, remote operation, and network management before implementing object detection.
+
 ## Raspberry Pi Fundamentals (Prerequisites)
 
 Before implementing object detection using the **Raspberry Pi 4** and **NoIR Camera V2**, the following Raspberry Pi concepts and techniques were practiced:
