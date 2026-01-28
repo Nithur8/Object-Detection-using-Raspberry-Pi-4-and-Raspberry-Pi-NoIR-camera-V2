@@ -72,8 +72,7 @@ ls -l test.jpg
 5. Download the YOLO11n PyTorch model (.pt)
 ```bash
 mkdir -p models
-# replace <MODEL_URL> with the real download link for yolo11n.pt
-wget -O models/yolo11n.pt "<MODEL_URL>"
+`yolo detect predict model=yolo11n.pt`
 ```
 
 6. Export the Ultralytics .pt model to ONNX (required before converting to ncnn)
