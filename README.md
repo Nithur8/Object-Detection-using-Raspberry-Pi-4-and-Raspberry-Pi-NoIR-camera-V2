@@ -7,8 +7,7 @@ This repository demonstrates object detection on a Raspberry Pi 4 using the Rasp
 - `detect_yolo11n.py` — main detection script using Ultralytics YOLO
 - `requirements.txt` — Python dependencies
 - `scripts/download_model.sh` — helper to download YOLO11n weights into `models/`
-- `run.sh` — convenience wrapper to run detection
-- `systemd/yolo11n.service` — example systemd unit to auto-start detection
+- 
 
 ## Requirements (on Raspberry Pi)
 - Raspberry Pi 4 (or equivalent)
