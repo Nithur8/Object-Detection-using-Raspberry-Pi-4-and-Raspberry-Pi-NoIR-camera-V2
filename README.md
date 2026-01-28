@@ -1,4 +1,4 @@
-# Object-Detection-using-Raspberry-Pi-4-and-Raspberry-Pi-NoIR-camera-V2
+# Object-Detection-using-Raspberry-Pi-4-and-Raspberry-Pi-NoIR-camera-V2 and YOLO11n
 --- 
 ## Documentation References
 
@@ -33,4 +33,10 @@ Before implementing object detection using the **Raspberry Pi 4** and **NoIR Cam
 * Understanding the build and usage of **rpicam-detect (TensorFlow Lite)**
 
 These fundamentals form the base for implementing and experimenting with real-time object detection on Raspberry Pi.
+
+## Process 
+1. Update the system packages: `sudo apt update && sudo apt upgrade -y`
+2. Create a folder:- YOLO_Detect
+3. 
+   
 
