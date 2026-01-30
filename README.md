@@ -34,92 +34,46 @@ Before implementing object detection using the **Raspberry Pi 4** and **NoIR Cam
 
 These fundamentals form the base for implementing and experimenting with real-time object detection on Raspberry Pi.
 
-## Process
+# Object detection process
 
-Follow these steps on the Raspberry Pi 4 to run the YOLO11n model.
+I performed object detection on the Raspberry Pi using the official libcamera-based rpicam-detect workflow from the Raspberry Pi documentation. I used rpicam-detect for camera capture and real-time post-processing with TensorFlow Lite so that the Pi handles both acquiring frames from the NoIR camera and running the detection model.
 
-1. Update system packages
+What I prepared
+
+- Enabled the camera interface and made sure the system is up to date.
+- Installed the libcamera/rpicam apps (or removed pre-installed rpicam-apps when necessary) so I could run rpicam-detect.
+- Installed the TensorFlow Lite runtime and dependencies required to run a .tflite model on the Pi.
+- Placed the TensorFlow Lite model (.tflite) and labels file in an accessible location (I used /usr/share/rpicam/models/ for convenience, or you can keep them in the project directory).
+
+How I ran detection
+
+I used the rpicam-detect application with the TensorFlow Lite post-processing stage (object_detect_tf). rpicam-detect handles camera capture and passes frames to the chosen post-processing stage which performs the neural network inference and returns detection results.
+
+An example command I used (adjust paths and thresholds to match your model and preferences):
+
 ```bash
-sudo apt update && sudo apt upgrade -y
+rpicam-detect --post-process object_detect_tf \
+  --model /usr/share/rpicam/models/ssd_mobilenet_v2_coco.tflite \
+  --labels /usr/share/rpicam/models/coco_labels.txt \
+  --threshold 0.5 \
+  --preview
 ```
 
-2. Create project folder and a Python virtual environment, then activate it
-```bash
-mkdir -p ~/YOLO_Detect
-cd ~/YOLO_Detect
+- `--post-process object_detect_tf`: selects the TensorFlow Lite object detection post-processing stage described in the Raspberry Pi docs.
+- `--model` and `--labels`: point rpicam-detect to the .tflite model and the labels file for interpreting model outputs.
+- `--threshold`: minimum confidence for reporting detections (adjust to suit your use case).
+- `--preview`: enable the camera preview window while detections run (omit if running headless).
 
-python3 -m venv venv
-source venv/bin/activate
+Notes and tips from my setup
 
-pip install --upgrade pip setuptools wheel
-```
+- If your system included pre-installed rpicam-apps and you prefer the packaged versions from the Raspberry Pi docs, follow the documentation's guidance to remove or replace pre-installed rpicam-apps before installing/updating the official packages.
+- Use TensorFlow Lite models optimized for the Pi (quantized models are faster and often viable for real-time detection on the Pi 4).
+- Put frequently used models under `/usr/share/rpicam/models/` so they are easy to reference from rpicam-detect.
+- If running headless or on startup, you can run rpicam-detect without `--preview` and route outputs (bounding boxes, JSON results, or other outputs supported by the post-processing stage) to files or services as needed.
 
-3. Install Ultralytics and common Python dependencies
-```bash
-pip install ultralytics opencv-python-headless numpy onnx onnxruntime
-```
+References
 
-4. Plug in the NoIR Camera V2 and verify it works
-```bash
-# quick preview
-libcamera-hello -t 2000
-
-# capture a still image to confirm
-libcamera-still -o test.jpg
-ls -l test.jpg
-```
-
-5. Download the YOLO11n PyTorch model (.pt)
-```bash
-mkdir -p models
-`yolo detect predict model=yolo11n.pt`
-```
-
-6. Export the Ultralytics .pt model to ONNX (required before converting to ncnn)
-```bash
-python - <<'PY'
-from ultralytics import YOLO
-YOLO("models/yolo11n.pt").export(format="onnx")
-PY
-# resulting file: models/yolo11n.onnx
-```
-
-7. Build ncnn tools (onnx2ncnn / ncnnoptimize) and convert ONNX → ncnn
-```bash
-# install build tools
-sudo apt install -y git build-essential cmake
-
-# clone and build ncnn (can be slow on Pi)
-git clone --depth=1 https://github.com/Tencent/ncnn.git
-cd ncnn
-mkdir build && cd build
-cmake .. -DNCNN_VULKAN=OFF
-make -j4
-
-# convert ONNX to ncnn format (run from ncnn/build/tools/onnx or adjust path)
-./onnx2ncnn ../../YOLO_Detect/models/yolo11n.onnx ../../YOLO_Detect/models/yolo11n.param ../../YOLO_Detect/models/yolo11n.bin
-
-# optional optimize step
-./ncnnoptimize ../../YOLO_Detect/models/yolo11n.param ../../YOLO_Detect/models/yolo11n.bin ../../YOLO_Detect/models/yolo11n-opt.param ../../YOLO_Detect/models/yolo11n-opt.bin 65536
-```
-
-8. Create a simple Python detect script (Ultralytics .pt runtime)
-```bash
-cat > detect.py <<'PY'
-from ultralytics import YOLO
-
-model = YOLO("models/yolo11n.pt")
-# use source=0 for the first camera; adjust conf and other args as needed
-model.predict(source=0, conf=0.25, show=True, save=False)
-PY
-```
-
-9. Run the model (Ultralytics .pt)
-```bash
-source venv/bin/activate
-python detect.py
-```
-
-10. (If using ncnn runtime) Use the ncnn examples or your ncnn Python/C++ wrapper to load `models/yolo11n.param` + `models/yolo11n.bin` (or the `-opt` files) and run inference on camera frames. The PyTorch/.pt script above runs immediately; converting to ncnn gives a more optimized runtime on ARM.
-
-End of Process.
+- rpicam-detect: https://www.raspberrypi.com/documentation/computers/camera_software.html#rpicam-detect
+- rpicam-apps (remove pre-installed rpicam-apps): https://www.raspberrypi.com/documentation/computers/camera_software.html#remove-pre-installed-rpicam-apps
+- TensorFlow Lite install (post-processing with TensorFlow Lite): https://www.raspberrypi.com/documentation/computers/camera_software.html#post-processing-with-tensorflow-lite
+- TensorFlow Lite object detection stage (object_detect_tf): https://www.raspberrypi.com/documentation/computers/camera_software.html#object_detect_tf
